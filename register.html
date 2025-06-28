@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register Page</title>
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    flex-direction: column;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    position: relative;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    animation: floatBubble 20s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes floatBubble {
+    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+    50% { opacity: 0.6; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  .bubble:nth-child(1) { width: 60px; height: 60px; left: 10%; animation-delay: 0s; }
+  .bubble:nth-child(2) { width: 40px; height: 40px; left: 25%; animation-delay: 3s; }
+  .bubble:nth-child(3) { width: 80px; height: 80px; left: 40%; animation-delay: 6s; }
+  .bubble:nth-child(4) { width: 50px; height: 50px; left: 60%; animation-delay: 9s; }
+  .bubble:nth-child(5) { width: 70px; height: 70px; left: 75%; animation-delay: 12s; }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 40px 30px;
+    width: 350px;
+    animation: fadeInUp 1s ease;
+    margin-bottom: 20px;
+  }
+
+  @keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+    color: #444;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    font-size: 14px;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 25px;
+    padding: 12px;
+    background-color: #4b7bec;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  button:hover {
+    background-color: #3867d6;
+  }
+
+  #qrcode img {
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
+  }
+
+  #goToScanBtn {
+    display: none;
+    margin-top: 20px;
+    padding: 8px 15px;
+    background-color: #4b7bec;
+    color: white;
+    font-size: 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: auto;
+  }
+
+  #goToScanBtn:hover {
+    background-color: #3867d6;
+  }
+</style>
+
+</head>
+<body>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="card">
+    <h2>Register for Event</h2>
+    <form id="registerForm">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required />
+  
+      <label for="rollno">Roll No:</label>
+      <input type="text" id="rollno" required />
+  
+      <label for="email">Email:</label>
+      <input type="email" id="email" required />
+  
+      <label for="event">Event Name:</label>
+      <input type="text" id="event" required />
+  
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <div id="qrcode"></div>
+  <button id="goToScanBtn" onclick="window.location.href='scan.html';">Go to Scan</button>
+
+  <script>
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(String(email).toLowerCase());
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const rollno = document.getElementById("rollno").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const eventName = document.getElementById("event").value.trim();
+
+      if (!validateEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:5000/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, rollno, email, event: eventName })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert(`${name} registered to ${eventName}!`);
+
+          const qrcodeContainer = document.getElementById("qrcode");
+          qrcodeContainer.innerHTML = `<img src="${data.qrCode}" alt="QR Code" />`;
+
+          // Show the button to go to scan.html after showing the QR code
+          const goToScanBtn = document.getElementById("goToScanBtn");
+          goToScanBtn.style.display = "block";
+
+           setTimeout(function() {
+            window.location.href = "scan.html";
+          }, 10000); // Redirect after 3 seconds
+          
+        } else {
+          alert(data.message || "Registration failed.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Error registering user");
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+         
+          

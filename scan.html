@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scan QR Code</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    #reader {
+      width: 300px;
+      margin-top: 20px;
+    }
+
+    #result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+      width: 300px;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h2>Scan your QR Code</h2>
+  <div id="reader"></div>
+  <div id="result"><strong>Result:</strong> <span id="output">None</span></div>
+
+  <script>
+    function onScanSuccess(decodedText, decodedResult) {
+      document.getElementById('output').textContent = decodedText;
+      console.log("Scanned data:", decodedText);
+
+      try {
+        const data = JSON.parse(decodedText);
+        const { email, event } = data;
+
+        if (!email || !event) {
+          alert("Invalid QR Code data");
+          return;
+        }
+
+        // Send POST request to check-in
+        fetch("http://localhost:5000/api/checkin", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, event })
+        })
+        .then(res => res.json())
+        .then(response => {
+          alert(response.message);
+           window.location.href = "index.html";
+        })
+        .catch(err => {
+          console.error("Check-in failed:", err);
+          alert("Check-in failed");
+        });
+
+      } catch (e) {
+        console.error("Failed to parse QR code:", e);
+        alert("Invalid QR Code format");
+      }
+    }
+
+    function onScanFailure(error) {
+      // You can ignore scan failures or show messages
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+  </script>
+</body>
+</html>

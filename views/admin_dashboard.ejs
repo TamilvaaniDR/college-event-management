@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+  <h1>Registered Users</h1>
+  <table border="1">
+    <tr>
+      <th>Name</th>
+      <th>Roll No</th>
+      <th>Email</th>
+      <th>Event</th>
+    </tr>
+    <% registrations.forEach(user => { %>
+      <tr>
+        <td><%= user.name %></td>
+        <td><%= user.rollno %></td>
+        <td><%= user.email %></td>
+        <td><%= user.event %></td>
+      </tr>
+    <% }) %>
+  </table>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <style>
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+    
+        body {
+          font-family: 'Inter', sans-serif;
+          background-color: #f0f2f5;
+          color: #333;
+          padding-bottom: 3rem;
+        }
+    
+        .header {
+          background-color: #1e293b;
+          color: white;
+          padding: 1.2rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    
+        .header h1 {
+          font-size: 1.8rem;
+        }
+    
+        .logout-btn {
+          background-color: #ef4444;
+          border: none;
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+    
+        .logout-btn:hover {
+          background-color: #dc2626;
+        }
+    
+        .grid-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 2rem;
+          padding: 2rem;
+        }
+    
+        .card {
+          background: #ffffff;
+          border-radius: 16px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+    
+        .card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+        }
+    
+        .card img {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+        }
+    
+        .card-content {
+          padding: 1.2rem;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+    
+        .card-title {
+          font-size: 1.2rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: #2563eb;
+          transition: color 0.3s ease;
+        }
+    
+        .card-title:hover {
+          color: #1d4ed8;
+        }
+    
+        .event-date {
+          font-size: 0.9rem;
+          color: #555;
+          margin-bottom: 0.8rem;
+        }
+    
+        .collapse {
+          font-size: 0.95rem;
+          max-height: 0;
+          overflow: hidden;
+          opacity: 0;
+          transition: max-height 0.4s ease, opacity 0.3s ease;
+        }
+    
+        .collapse.show {
+          max-height: 150px;
+          opacity: 1;
+          margin-top: 0.5rem;
+          margin-bottom: 0.5rem;
+        }
+    
+        .toggle-link {
+          color: #3b82f6;
+          font-size: 0.9rem;
+          cursor: pointer;
+          margin-top: auto;
+          align-self: flex-start;
+        }
+    
+        .toggle-link:hover {
+          text-decoration: underline;
+        }
+    
+        .register-btn {
+          margin-top: 1rem;
+          background-color: #10b981;
+          color: white;
+          border: none;
+          padding: 0.6rem 1rem;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+    
+        .register-btn:hover {
+          background-color: #059669;
+        }
+    
+        /* Modal styles */
+        .modal {
+          display: none;
+          position: fixed;
+          z-index: 1000;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+    
+        .modal-content {
+          background-color: #fff;
+          margin: 10% auto;
+          padding: 2rem;
+          border-radius: 10px;
+          width: 300px;
+          position: relative;
+        }
+    
+        .modal h2 {
+          margin-top: 0;
+        }
+    
+        .close {
+          color: #aaa;
+          position: absolute;
+          top: 10px;
+          right: 20px;
+          font-size: 28px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+    
+        .modal input {
+          width: 100%;
+          padding: 0.5rem;
+          margin: 0.5rem 0;
+        }
+    
+        .submit-btn {
+          background-color: #2563eb;
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+    
+        .success-message {
+          color: green;
+          text-align: center;
+          display: none;
+        }
+    
+        @media screen and (max-width: 600px) {
+          .header h1 {
+            font-size: 1.4rem;
+          }
+    
+          .register-btn, .logout-btn {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+          }
+        }
+
+        .home-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+        }
+        
+        .home-button:hover {
+            background-color: #0056b3;
+        }
+        
+      </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>User Dashboard</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+
+    </div>
+
+    <div class="grid-container">
+
+        <!-- 1 -->
+        <div class="card">
+          <img src="assets/event_1.jpeg" alt="Event 1">
+          <div class="card-content">
+            <h3 class="card-title">Tech Conference 2025</h3>
+            <p class="event-date">March 15, 2025</p>
+            <p class="collapse">Join industry experts and enthusiasts for an immersive experience in future technology.</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+          </div>
+        </div>
+    
+        <!-- 2 -->
+        <div class="card">
+          <img src="assets/Event2.png" alt="Event 2">
+          <div class="card-content">
+            <h3 class="card-title">Coding Hackathon</h3>
+            <p class="event-date">April 5, 2025</p>
+            <p class="collapse">Solve real-world problems in 24 hours! Compete, collaborate, and win prizes!</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+          </div>
+        </div>
+    
+        <!-- 3 -->
+        <div class="card">
+          <img src="assets/Event3.jpeg" alt="Event 3">
+          <div class="card-content">
+            <h3 class="card-title">Music Fest</h3>
+            <p class="event-date">May 10, 2025</p>
+            <p class="collapse">Experience soulful music, live bands, and amazing food at our open-air music festival.</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+          </div>
+        </div>
+    
+        <!-- 4 -->
+        <div class="card">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCUs4PsudRT4Rf8TkivFeh113qQfq_yUJkHA&s" alt="Event 4">
+          <div class="card-content">
+            <h3 class="card-title">Art & Craft Expo</h3>
+            <p class="event-date">June 1, 2025</p>
+            <p class="collapse">Showcase your creativity or get inspired at the grandest arts and crafts exhibition.</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+          </div>
+        </div>
+    
+        <!-- 5 -->
+        <div class="card">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-L6V3gMURD_4s63nWbCvZ06WLoHXL5vteTw&s" alt="Event 5">
+          <div class="card-content">
+            <h3 class="card-title">Photography Walk</h3>
+            <p class="event-date">June 20, 2025</p>
+            <p class="collapse">Capture beauty through your lens. Join fellow shutterbugs for an urban nature trail.</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+          </div>
+        </div>
+    
+        <!-- 6 -->
+        <div class="card">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQ0QgVArj66AIL_PQCdLfe-qHrBKJHFTBNZA&s" alt="Event 6">
+          <div class="card-content">
+            <h3 class="card-title">Gaming Championship</h3>
+            <p class="event-date">July 12, 2025</p>
+            <p class="collapse">The ultimate e-sports face-off. Compete with the best for a huge cash prize!</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+          </div>
+        </div>
+    
+        <!-- 7 -->
+        <div class="card">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrD3GwbchgqHlHwD5vcCQZ-MbL8K8DzplXVg&s" alt="Event 7">
+          <div class="card-content">
+            <h3 class="card-title">Startup Pitch Fest</h3>
+            <p class="event-date">August 2, 2025</p>
+            <p class="collapse">Entrepreneurs showcase their ideas to investors, mentors, and fellow dreamers.</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+          </div>
+        </div>
+    
+        <!-- 8 -->
+        <div class="card">
+          <img src="https://ehealth.eletsonline.com/wp-content/uploads/2020/12/Yoga-and-Spirituality.jpg" alt="Event 8">
+          <div class="card-content">
+            <h3 class="card-title">Yoga & Wellness Camp</h3>
+            <p class="event-date">September 8, 2025</p>
+            <p class="collapse">Relax and reconnect. A full-day retreat of guided meditation, yoga, and healthy food.</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+          </div>
+        </div>
+    
+        <!-- 9 -->
+        <div class="card">
+          <img src="https://northgatesentinel.com/wp-content/uploads/2020/11/IMG_8592.jpg" alt="Event 9">
+          <div class="card-content">
+            <h3 class="card-title">Environmental Awareness Rally</h3>
+            <p class="event-date">October 1, 2025</p>
+            <p class="collapse">Walk for a cause. Join hands with nature activists to make our earth greener.</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+          </div>
+        </div>
+    
+        <!-- 10 -->
+        <div class="card">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUHbG8aq0lgFMGE3veQveWlpnpRcu3y_gA8TwQhrEdU3uJYoP0QV9-XvOIOLx1KZzTGiY&usqp=CAU" alt="Event 10">
+          <div class="card-content">
+            <h3 class="card-title">Science Exhibition</h3>
+            <p class="event-date">November 25, 2025</p>
+            <p class="collapse">Show your inner Einstein! Present your innovations and win amazing prizes!</p>
+            <span class="toggle-link" onclick="toggleDescription(this)">Read more</span>
+            <button class="register-btn" onclick="window.location.href='register.html';">Register Now</button>
+
+
+          </div>
+        </div>
+       
+      </div>
+    <!-- Modal -->
+    <div id="registrationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Register for <span id="eventName"></span></h2>
+            <input type="text" id="userName" placeholder="Your Name">
+            <input type="email" id="userEmail" placeholder="Your Email">
+            <button class="submit-btn" onclick="submitRegistration()">Submit</button>
+            <p class="success-message" id="successMessage">✅ Registered Successfully!</p>
+        </div>
+    </div>
+    <footer><button class="home-button" onclick="goHome()">🏠</button></footer>
+    <script>
+        function logout() {
+            // You can customize logout logic here
+            alert("Logging out...");
+            window.location.href = "login.html";
+          }
+          function goHome() {
+            window.location.href = "index.html"; // Change if your home route is different
+          }
+    </script>
+
+</body>
+</html>
